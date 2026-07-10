@@ -62,6 +62,13 @@ keep it generic — nothing site-specific may enter this repo.
 - The Panel resolves a block preview to the global component
   `k-block-type-<type>`; plugin-registered components qualify. Without one,
   the Panel falls back to the generic fields preview.
+- Block preview components update content by emitting `update` with the
+  **full merged content object** (`this.$emit("update", { ...this.content,
+  start: value })`) — verified against core `Types/Default.vue` in Kirby
+  5.5.0, whose `update(content)` merges exactly like this. The new content
+  flows back into the `content` prop asynchronously (Vue re-render), so a
+  computed that falls back to `content.start` after a drag keeps the
+  position stable without local state.
 - `document`-level `touchmove` listeners are passive by default in Chrome —
   pass `{ passive: false }` when calling `preventDefault()` (the stage also
   sets `touch-action: none`, which covers scrolling on the element itself).

@@ -10,7 +10,8 @@ two images, a draggable divider, done.
 - **Accessible:** works with mouse, touch, and keyboard (arrow keys on the
   handle).
 - **Themeable** through CSS custom properties.
-- **Panel preview** showing both images side by side.
+- **Interactive Panel preview:** drag the divider right in the Panel to set
+  the start position — the range field in the block drawer stays in sync.
 
 ## Requirements
 
@@ -50,7 +51,9 @@ fields:
 ```
 
 Editors then pick a before image, an after image, an optional caption, and the
-initial divider position (0–100 %, default 50).
+initial divider position (0–100 %, default 50). The Panel preview mirrors the
+frontend: drag its divider to set the start position, or fine-tune it with the
+range field in the drawer (double-click the preview to open it).
 
 The block renders a `<figure class="image-compare">` with both images as
 responsive `<picture>` elements and a draggable divider. The stylesheet and
@@ -68,6 +71,7 @@ Override these custom properties on `.image-compare` or any ancestor:
 | `--image-compare-handle-size` | `2rem` | diameter of the round grip |
 | `--image-compare-handle-bg` | `#fff` | grip background |
 | `--image-compare-handle-color` | `#555` | grip arrow color |
+| `--image-compare-arrow-size` | `75%` | arrow size relative to the grip |
 
 The stage's aspect ratio is derived from the before image automatically; set
 `--image-compare-ratio` yourself to force a different ratio.

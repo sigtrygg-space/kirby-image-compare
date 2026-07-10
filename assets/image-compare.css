@@ -9,6 +9,7 @@
  *   --image-compare-handle-size   diameter of the round grip  (default: 2rem)
  *   --image-compare-handle-bg     grip background             (default: #fff)
  *   --image-compare-handle-color  grip arrow color            (default: #555)
+ *   --image-compare-arrow-size    arrow size relative to the grip (default: 75%)
  */
 
 .image-compare-stage {
@@ -77,5 +78,5 @@
 	width: var(--image-compare-handle-size, 2rem);
 	height: var(--image-compare-handle-size, 2rem);
 	background: var(--image-compare-handle-color, #555);
-	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 7l-5 5 5 5V7zm8 0v10l5-5-5-5z'/%3E%3C/svg%3E") center / 60% no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 7l-5 5 5 5V7zm8 0v10l5-5-5-5z'/%3E%3C/svg%3E") center / var(--image-compare-arrow-size, 75%) no-repeat;
 }
