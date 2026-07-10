@@ -1,0 +1,41 @@
+{
+    "name": "sigtrygg-space/kirby-image-compare",
+    "description": "Before/after image comparison block for Kirby CMS: responsive images, draggable divider, zero dependencies.",
+    "type": "kirby-plugin",
+    "version": "0.1.0",
+    "license": "MIT",
+    "keywords": [
+        "kirby",
+        "kirby-cms",
+        "kirby-plugin",
+        "block",
+        "image-compare",
+        "before-after",
+        "comparison-slider"
+    ],
+    "homepage": "https://github.com/sigtrygg-space/kirby-image-compare",
+    "authors": [
+        {
+            "name": "Matthias Schmidt",
+            "homepage": "https://sps-architekten.de"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/sigtrygg-space/kirby-image-compare/issues",
+        "source": "https://github.com/sigtrygg-space/kirby-image-compare"
+    },
+    "require": {
+        "php": ">=8.2",
+        "getkirby/composer-installer": "^1.2"
+    },
+    "extra": {
+        "kirby-cms-path": false,
+        "installer-name": "image-compare"
+    },
+    "config": {
+        "allow-plugins": {
+            "getkirby/composer-installer": true
+        },
+        "optimize-autoloader": true
+    }
+}

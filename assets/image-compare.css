@@ -1,0 +1,81 @@
+/*
+ * Frontend styles for the image comparison block.
+ *
+ * Themeable via custom properties (set them on .image-compare or any ancestor):
+ *   --image-compare-ratio         aspect ratio of the stage (set inline from the before image)
+ *   --image-compare-start         initial divider position (set inline from the block)
+ *   --image-compare-line-width    divider line width          (default: 2px)
+ *   --image-compare-line-color    divider line color          (default: #fff)
+ *   --image-compare-handle-size   diameter of the round grip  (default: 2rem)
+ *   --image-compare-handle-bg     grip background             (default: #fff)
+ *   --image-compare-handle-color  grip arrow color            (default: #555)
+ */
+
+.image-compare-stage {
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: var(--image-compare-ratio, 3 / 2);
+	cursor: ew-resize;
+	user-select: none;
+	touch-action: none;
+}
+
+.image-compare-before,
+.image-compare-after {
+	position: absolute;
+	inset: 0;
+}
+
+.image-compare-after {
+	clip-path: inset(0 calc(100% - var(--image-compare-start, 50%)) 0 0);
+}
+
+.image-compare-pic {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.image-compare-pic img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.image-compare-handle {
+	position: absolute;
+	inset: 0 auto 0 var(--image-compare-start, 50%);
+	transform: translateX(-50%);
+	width: var(--image-compare-line-width, 2px);
+	border: none;
+	padding: 0;
+	background: var(--image-compare-line-color, #fff);
+	cursor: ew-resize;
+}
+
+/* the round grip */
+.image-compare-handle::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: var(--image-compare-handle-size, 2rem);
+	height: var(--image-compare-handle-size, 2rem);
+	border-radius: 50%;
+	background: var(--image-compare-handle-bg, #fff);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* the double arrow — masked, so its color stays themeable */
+.image-compare-handle::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: var(--image-compare-handle-size, 2rem);
+	height: var(--image-compare-handle-size, 2rem);
+	background: var(--image-compare-handle-color, #555);
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 7l-5 5 5 5V7zm8 0v10l5-5-5-5z'/%3E%3C/svg%3E") center / 60% no-repeat;
+}

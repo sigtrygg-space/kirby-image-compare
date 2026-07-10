@@ -1,0 +1,34 @@
+name:
+  en: Image comparison
+  de: Bildvergleich
+icon: image
+fields:
+  image_before:
+    label:
+      en: Before image
+      de: Bild vorher
+    type: files
+    multiple: false
+    max: 1
+  image_after:
+    label:
+      en: After image
+      de: Bild nachher
+    type: files
+    multiple: false
+    max: 1
+  caption:
+    label:
+      en: Caption
+      de: Bildunterschrift
+    type: text
+  start:
+    label:
+      en: Start position
+      de: Startposition
+    type: range
+    min: 0
+    max: 100
+    step: 1
+    default: 50
+    after: "%"
