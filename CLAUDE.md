@@ -51,6 +51,11 @@ keep it generic — nothing site-specific may enter this repo.
 
 ## Verified facts
 
+- kirbyup bundles CSS imported in `src/index.js` (e.g.
+  `import "../assets/image-compare.css"`) into the built `index.css` —
+  that is how the Panel preview shares the frontend divider/grip styles
+  (single source, same class names in both DOMs).
+
 - `page.render:after` is an apply-hook (`$kirby->apply(..., 'html')`,
   Page.php ~987 in 5.5): the closure receives named args (contentType,
   data, html, page), its return value replaces the HTML, and it runs

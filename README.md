@@ -10,8 +10,8 @@ two images, a draggable divider, done.
   that contains the block — nothing to add to your templates.
 - **Responsive images** out of the box: WebP + JPEG `<picture>` with `srcset`,
   built on Kirby's own thumb engine.
-- **Accessible:** works with mouse, touch, and keyboard (arrow keys on the
-  handle).
+- **Accessible:** the handle is a WAI-ARIA slider — mouse, touch, and full
+  keyboard support (arrow keys, PageUp/PageDown, Home/End).
 - **Themeable** through CSS custom properties.
 - **Interactive Panel preview:** drag the divider right in the Panel to set
   the start position — the range field in the block drawer stays in sync.
@@ -67,6 +67,39 @@ without a `<head>` — do you need to include the two files from
 `kirby()->plugin('sigtrygg-space/kirby-image-compare')->asset('image-compare.css')->url()`
 and `…->asset('image-compare.js')->url()` yourself.)
 
+## Options
+
+Configure site-wide in `site/config/config.php` under the
+`sigtrygg-space.kirby-image-compare` namespace:
+
+```php
+'sigtrygg-space.kirby-image-compare' => [
+	'widths'  => [480, 768, 1024, 1200, 1440],
+	'quality' => ['webp' => 90, 'jpg' => 85],
+	'sizes'   => '(min-width: 1200px) 720px, 100vw',
+],
+```
+
+| Option | Default | Purpose |
+| --- | --- | --- |
+| `widths` | `[480, 768, 1024, 1200, 1440]` | `srcset` widths |
+| `formats` | `['webp', 'jpg']` | `<source>` formats in order (`avif`, `webp`, `jpg`, `png`) |
+| `quality` | `88` | thumb quality: int, per-format map, or `null` for your Kirby `thumbs` config |
+| `sizes` | `(min-width: 1200px) 720px, 100vw` | `sizes` attribute (also overridable per call via the snippet variable) |
+| `fallback` | `1200` | width of the plain `<img>` fallback |
+| `step` | `2` | keyboard step in percent (arrow keys; PageUp/PageDown move 10 %, Home/End jump to the edges) |
+| `label` | `null` | overrides the handle's `aria-label` (useful on single-language sites, where the English translation would otherwise win) |
+
+## Dynamically inserted blocks
+
+The script initializes every `[data-image-compare]` stage once on page load.
+If your site swaps content in later (htmx, Turbo, infinite scroll), re-run
+the idempotent initializer on the new fragment:
+
+```js
+window.kirbyImageCompare.init(fragment); // argument optional, defaults to document
+```
+
 ## Theming
 
 Override these custom properties on `.image-compare` or any ancestor:
@@ -91,18 +124,6 @@ always beats the inherited inline value:
 }
 ```
 
-### Handle label
-
-The drag handle's `aria-label` defaults to the English "Drag to compare" (a
-German translation ships for multi-language sites). On single-language sites,
-set your own wording via a config option:
-
-```php
-// site/config/config.php
-'sigtrygg-space.kirby-image-compare' => [
-	'label' => 'Bildvergleich verschieben'
-],
-```
 
 ### Custom image markup
 

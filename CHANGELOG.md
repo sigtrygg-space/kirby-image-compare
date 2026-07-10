@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.4.0 — 2026-07-10
+
+Closes the first round of backlog issues (#1–#4).
+
+- **Responsive image options** (#1): `widths`, `formats` (incl. AVIF),
+  `quality` (int, per-format map, or `null` to fall through to Kirby's
+  `thumbs` config), `sizes`, and `fallback` are now plugin options — no
+  more snippet fork to change a number.
+- **Re-init API** (#2): `window.kirbyImageCompare.init(root)` initializes
+  dynamically inserted blocks (htmx/Turbo swaps, infinite scroll);
+  idempotent per stage.
+- **ARIA slider** (#3): the handle is a proper WAI-ARIA slider
+  (`role="slider"`, `aria-valuemin/max/now`) with full keyboard support —
+  arrow keys (configurable `step` option, default 2 %), PageUp/PageDown
+  (10 %), Home/End.
+- **Single source for the visuals** (#4): the Panel preview now bundles
+  the frontend stylesheet (kirbyup import) and reuses its classes —
+  divider/grip styles exist exactly once; the preview divider moves via
+  the same custom property as the frontend.
+
 ## 0.3.0 — 2026-07-10
 
 Hardening release: all findings from a full code review, verified against the

@@ -6,7 +6,17 @@ Kirby::plugin('sigtrygg-space/kirby-image-compare', [
 	'options' => [
 		// overrides the handle's aria-label (useful on single-language
 		// sites, where t() always resolves the English translation)
-		'label' => null
+		'label' => null,
+		// keyboard step of the handle in percent
+		'step' => 2,
+		// responsive image tuning for the built-in picture snippet;
+		// quality accepts an int or a per-format map (['webp' => 90]);
+		// null falls through to Kirby's thumbs config
+		'widths'   => [480, 768, 1024, 1200, 1440],
+		'formats'  => ['webp', 'jpg'],
+		'quality'  => 88,
+		'sizes'    => '(min-width: 1200px) 720px, 100vw',
+		'fallback' => 1200
 	],
 	'blueprints' => [
 		'blocks/image-compare' => __DIR__ . '/blueprints/blocks/image-compare.yml'

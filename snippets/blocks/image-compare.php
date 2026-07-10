@@ -6,6 +6,7 @@ $before  = $block->image_before()->toFile();
 $after   = $block->image_after()->toFile();
 $caption = $block->caption();
 $start   = max(0, min(100, $block->start()->or(50)->toInt()));
+$step    = max(1, (int)option('sigtrygg-space.kirby-image-compare.step'));
 $label   = option('sigtrygg-space.kirby-image-compare.label')
 	?? t('image-compare.drag', 'Drag to compare');
 
@@ -27,7 +28,17 @@ if ($before->width() > 0 && $before->height() > 0) {
 	<div class="image-compare-stage" data-image-compare data-start="<?= $start ?>">
 		<div class="image-compare-before"><?php snippet('image-compare-picture', ['image' => $before]) ?></div>
 		<div class="image-compare-after"><?php snippet('image-compare-picture', ['image' => $after]) ?></div>
-		<button class="image-compare-handle" type="button" aria-label="<?= esc($label) ?>"></button>
+		<button
+			class="image-compare-handle"
+			type="button"
+			role="slider"
+			aria-label="<?= esc($label) ?>"
+			aria-orientation="horizontal"
+			aria-valuemin="0"
+			aria-valuemax="100"
+			aria-valuenow="<?= $start ?>"
+			data-step="<?= $step ?>"
+		></button>
 	</div>
 	<?php if ($caption->isNotEmpty()) : ?>
 	<figcaption><?= $caption->html() ?></figcaption>

@@ -5,23 +5,30 @@
 (function () {
 	'use strict';
 
-	document.querySelectorAll('[data-image-compare]').forEach(function (el) {
-		var after   = el.querySelector('.image-compare-after');
-		var handle  = el.querySelector('.image-compare-handle');
-		var current = 0.5;
+	function setup(el) {
+		var after  = el.querySelector('.image-compare-after');
+		var handle = el.querySelector('.image-compare-handle');
 
-		if (!after || !handle) {
+		if (!after || !handle || el.dataset.imageCompareReady) {
 			return;
 		}
+
+		el.dataset.imageCompareReady = 'true';
+
+		var current = 0.5;
 
 		function set(pct) {
 			current = pct;
 			after.style.clipPath = 'inset(0 ' + (1 - pct) * 100 + '% 0 0)';
 			handle.style.left = (pct * 100) + '%';
+			handle.setAttribute('aria-valuenow', Math.round(pct * 100));
 		}
 
 		var start = parseInt(el.dataset.start, 10);
 		set((isNaN(start) ? 50 : Math.max(0, Math.min(100, start))) / 100);
+
+		var step = parseInt(handle.dataset.step, 10);
+		step = (isNaN(step) || step < 1 ? 2 : step) / 100;
 
 		// one captured pointer per stage: capture guarantees a terminal
 		// pointerup/pointercancel even off-window, and the id filter keeps
@@ -56,10 +63,29 @@
 		el.addEventListener('pointercancel', release);
 
 		handle.addEventListener('keydown', function (e) {
-			if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+			var pct = {
+				ArrowLeft:  current - step,
+				ArrowRight: current + step,
+				PageDown:   current - 0.1,
+				PageUp:     current + 0.1,
+				Home:       0,
+				End:        1
+			}[e.key];
+
+			if (pct !== undefined) {
 				e.preventDefault();
-				set(Math.max(0, Math.min(1, current + (e.key === 'ArrowRight' ? 0.02 : -0.02))));
+				set(Math.max(0, Math.min(1, pct)));
 			}
 		});
-	});
+	}
+
+	function init(root) {
+		(root || document).querySelectorAll('[data-image-compare]').forEach(setup);
+	}
+
+	// re-init hook for dynamically inserted blocks (htmx/Turbo swaps,
+	// infinite scroll): idempotent per stage via a data flag
+	window.kirbyImageCompare = { init: init };
+
+	init();
 })();

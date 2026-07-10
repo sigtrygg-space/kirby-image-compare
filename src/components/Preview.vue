@@ -2,20 +2,17 @@
 	<div class="k-image-compare-preview">
 		<div
 			ref="stage"
-			class="k-image-compare-preview-stage"
-			:style="{ '--position': position + '%', aspectRatio: ratio }"
+			class="image-compare-stage k-image-compare-preview-stage"
+			:style="{ '--image-compare-start': position + '%', '--image-compare-ratio': ratio }"
 			@pointerdown="onPointerDown"
 			@pointermove="onPointerMove"
 			@pointerup="onPointerUp"
 			@pointercancel="onPointerCancel"
 			@dblclick="$emit('open')"
 		>
-			<div class="k-image-compare-preview-layer" :style="beforeStyle" />
-			<div
-				class="k-image-compare-preview-layer k-image-compare-preview-after"
-				:style="afterStyle"
-			/>
-			<div class="k-image-compare-preview-divider" />
+			<div class="image-compare-before k-image-compare-preview-layer" :style="beforeStyle" />
+			<div class="image-compare-after k-image-compare-preview-layer" :style="afterStyle" />
+			<div class="image-compare-handle" />
 		</div>
 		<p v-if="content.caption" class="k-image-compare-preview-caption">
 			{{ content.caption }}
@@ -147,60 +144,20 @@ export default {
 </script>
 
 <style>
+/* stage/divider/grip visuals come from the bundled frontend stylesheet
+   (assets/image-compare.css, imported in src/index.js) — below are only
+   the panel-specific extras */
+
 .k-image-compare-preview-stage {
-	position: relative;
-	aspect-ratio: 3 / 2;
+	--image-compare-handle-color: var(--color-gray-600);
 	max-height: 24rem;
-	overflow: hidden;
 	border-radius: var(--rounded);
 	background: var(--color-gray-200);
-	cursor: ew-resize;
-	user-select: none;
-	touch-action: none;
 }
 
 .k-image-compare-preview-layer {
-	position: absolute;
-	inset: 0;
 	background-size: cover;
 	background-position: center;
-}
-
-.k-image-compare-preview-after {
-	clip-path: inset(0 calc(100% - var(--position, 50%)) 0 0);
-}
-
-.k-image-compare-preview-divider {
-	position: absolute;
-	inset: 0 auto 0 var(--position, 50%);
-	transform: translateX(-50%);
-	width: 2px;
-	background: var(--color-white);
-}
-
-.k-image-compare-preview-divider::before {
-	content: "";
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 1.5rem;
-	height: 1.5rem;
-	border-radius: 50%;
-	background: var(--color-white);
-	box-shadow: var(--shadow);
-}
-
-.k-image-compare-preview-divider::after {
-	content: "";
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 1.5rem;
-	height: 1.5rem;
-	background: var(--color-gray-600);
-	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 7l-5 5 5 5V7zm8 0v10l5-5-5-5z'/%3E%3C/svg%3E") center / 75% no-repeat;
 }
 
 .k-image-compare-preview-caption {
