@@ -5,6 +5,9 @@
 			class="k-image-compare-preview-stage"
 			:style="{ '--position': position + '%', aspectRatio: ratio }"
 			@pointerdown="onPointerDown"
+			@pointermove="onPointerMove"
+			@pointerup="onPointerUp"
+			@pointercancel="onPointerCancel"
 			@dblclick="$emit('open')"
 		>
 			<div class="k-image-compare-preview-layer" :style="beforeStyle" />
@@ -22,31 +25,35 @@
 
 <script>
 export default {
+	inheritAttrs: false,
 	props: {
-		attrs: Object,
 		content: Object,
-		disabled: Boolean,
-		endpoints: Object,
-		id: String,
-		isHidden: Boolean,
-		type: String
+		disabled: Boolean
 	},
 	data() {
 		return {
-			beforeUrl: null,
-			afterUrl: null,
-			// mirror the frontend, which derives the stage ratio
-			// from the before image
-			ratio: "3 / 2",
-			dragging: false,
+			// mirrors the frontend: the stage ratio follows the before
+			// image; null falls back to the stylesheet's 3 / 2
+			ratio: null,
+			pointerId: null,
+			dragged: false,
 			dragPosition: 50
 		};
 	},
 	computed: {
+		// the files field delivers its value as pickerData objects inside
+		// the reactive content prop — no API round-trip needed, and image
+		// swaps in the drawer update the preview automatically
+		beforeUrl() {
+			return this.fileUrl(this.content?.image_before);
+		},
+		afterUrl() {
+			return this.fileUrl(this.content?.image_after);
+		},
 		// while dragging the local position wins; otherwise mirror the
 		// stored start value (which the range field in the drawer edits)
 		position() {
-			if (this.dragging) {
+			if (this.pointerId !== null && this.dragged) {
 				return this.dragPosition;
 			}
 
@@ -60,86 +67,79 @@ export default {
 			return this.afterUrl ? { backgroundImage: `url(${this.afterUrl})` } : {};
 		}
 	},
-	async created() {
-		const before = await this.resolveFile(this.content?.image_before);
-		const after = await this.resolveFile(this.content?.image_after);
+	watch: {
+		beforeUrl: {
+			immediate: true,
+			// pickerData carries no dimensions, so read them off the loaded
+			// image itself (same URL as the layer — the browser fetches once)
+			handler(url) {
+				this.ratio = null;
 
-		this.beforeUrl = before?.panelImage?.url ?? null;
-		this.afterUrl = after?.panelImage?.url ?? null;
+				if (!url) {
+					return;
+				}
 
-		if (before?.dimensions?.width > 0 && before?.dimensions?.height > 0) {
-			this.ratio = `${before.dimensions.width} / ${before.dimensions.height}`;
+				const probe = new Image();
+				probe.onload = () => {
+					if (this.beforeUrl === url && probe.naturalWidth > 0 && probe.naturalHeight > 0) {
+						this.ratio = `${probe.naturalWidth} / ${probe.naturalHeight}`;
+					}
+				};
+				probe.src = url;
+			}
 		}
 	},
-	destroyed() {
-		this.unbind();
-	},
 	methods: {
+		fileUrl(fieldValue) {
+			const first = Array.isArray(fieldValue) ? fieldValue[0] : null;
+			return first?.image?.url ?? first?.url ?? null;
+		},
 		// dragging the divider writes the released position back into the
-		// block's `start` field — same field the range input edits
+		// block's `start` field — same field the range input edits; a plain
+		// click (no movement) selects the block without touching content
 		onPointerDown(event) {
-			if (this.disabled) {
+			if (this.disabled || this.pointerId !== null || event.button !== 0) {
 				return;
 			}
 
-			event.preventDefault();
-
-			this.dragging = true;
-			this.moveTo(event.clientX);
-
-			this.onPointerMove = (moveEvent) => this.moveTo(moveEvent.clientX);
-			this.onPointerUp = () => {
-				this.unbind();
-				this.dragging = false;
-				this.$emit("update", { ...this.content, start: this.dragPosition });
-			};
-
-			window.addEventListener("pointermove", this.onPointerMove);
-			window.addEventListener("pointerup", this.onPointerUp);
+			this.pointerId = event.pointerId;
+			this.dragged = false;
+			this.startX = event.clientX;
+			this.stageRect = this.$refs.stage.getBoundingClientRect();
+			this.$refs.stage.setPointerCapture(event.pointerId);
 		},
-		moveTo(clientX) {
-			const rect = this.$refs.stage.getBoundingClientRect();
-			const pct = ((clientX - rect.left) / rect.width) * 100;
+		onPointerMove(event) {
+			if (event.pointerId !== this.pointerId) {
+				return;
+			}
+
+			if (this.dragged === false && Math.abs(event.clientX - this.startX) < 3) {
+				return;
+			}
+
+			this.dragged = true;
+			const pct = ((event.clientX - this.stageRect.left) / this.stageRect.width) * 100;
 			this.dragPosition = Math.round(Math.max(0, Math.min(100, pct)));
 		},
-		unbind() {
-			window.removeEventListener("pointermove", this.onPointerMove);
-			window.removeEventListener("pointerup", this.onPointerUp);
+		onPointerUp(event) {
+			if (event.pointerId !== this.pointerId) {
+				return;
+			}
+
+			const dragged = this.dragged;
+			this.pointerId = null;
+			this.dragged = false;
+
+			if (dragged) {
+				this.$emit("update", { ...this.content, start: this.dragPosition });
+			}
 		},
-		// a files field stores an array of file references; resolve the
-		// first one to its panel thumb + dimensions via the API
-		async resolveFile(fieldValue) {
-			if (!fieldValue) {
-				return null;
-			}
-
-			let files = fieldValue;
-
-			if (typeof files === "string") {
-				try {
-					files = JSON.parse(files);
-				} catch {
-					return null;
-				}
-			}
-
-			if (!Array.isArray(files) || !files.length) {
-				return null;
-			}
-
-			const first = files[0];
-			const uuid = first?.uuid ?? first?.id ?? (typeof first === "string" ? first : null);
-
-			if (!uuid) {
-				return null;
-			}
-
-			try {
-				return await window.panel.api.files.get(null, uuid, {
-					select: "panelImage,dimensions"
-				});
-			} catch {
-				return null;
+		// a cancelled pointer (scroll takeover, palm rejection) discards
+		// the drag; the divider falls back to the stored start value
+		onPointerCancel(event) {
+			if (event.pointerId === this.pointerId) {
+				this.pointerId = null;
+				this.dragged = false;
 			}
 		}
 	}

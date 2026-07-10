@@ -31,13 +31,19 @@
 	clip-path: inset(0 calc(100% - var(--image-compare-start, 50%)) 0 0);
 }
 
+/* element-level (low-specificity) selectors, so custom markup from an
+   overridden picture snippet is sized correctly even without the
+   .image-compare-pic class */
+.image-compare-before :where(picture),
+.image-compare-after :where(picture),
 .image-compare-pic {
 	display: block;
 	width: 100%;
 	height: 100%;
 }
 
-.image-compare-pic img {
+.image-compare-before :where(img),
+.image-compare-after :where(img) {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;

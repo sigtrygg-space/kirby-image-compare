@@ -5,8 +5,9 @@ two images, a draggable divider, done.
 
 ![Before/after comparison slider](.github/screenshot.jpg)
 
-- **Zero dependencies, zero config.** ~50 lines of vanilla JS, no slider
-  library. The frontend CSS/JS are injected automatically, once per page.
+- **Zero dependencies, zero config.** ~60 lines of vanilla JS, no slider
+  library. The frontend CSS/JS are injected into the `<head>` of every page
+  that contains the block — nothing to add to your templates.
 - **Responsive images** out of the box: WebP + JPEG `<picture>` with `srcset`,
   built on Kirby's own thumb engine.
 - **Accessible:** works with mouse, touch, and keyboard (arrow keys on the
@@ -59,8 +60,12 @@ range field in the drawer (double-click the preview to open it).
 
 The block renders a `<figure class="image-compare">` with both images as
 responsive `<picture>` elements and a draggable divider. The stylesheet and
-script are injected automatically the first time a block appears on a page —
-nothing to add to your templates.
+script are injected into the `<head>` automatically whenever a rendered page
+contains the block — nothing to add to your templates. (Only if you render
+blocks entirely outside of Kirby's page rendering — e.g. in a custom route
+without a `<head>` — do you need to include the two files from
+`kirby()->plugin('sigtrygg-space/kirby-image-compare')->asset('image-compare.css')->url()`
+and `…->asset('image-compare.js')->url()` yourself.)
 
 ## Theming
 
@@ -75,17 +80,39 @@ Override these custom properties on `.image-compare` or any ancestor:
 | `--image-compare-handle-color` | `#555` | grip arrow color |
 | `--image-compare-arrow-size` | `75%` | arrow size relative to the grip |
 
-The stage's aspect ratio is derived from the before image automatically; set
-`--image-compare-ratio` yourself to force a different ratio.
+The stage's aspect ratio is derived from the before image automatically (the
+plugin sets `--image-compare-ratio` as an inline style on the `figure`). To
+force a different ratio, target the stage itself — a declaration on the stage
+always beats the inherited inline value:
+
+```css
+.image-compare-stage {
+	--image-compare-ratio: 16 / 9;
+}
+```
+
+### Handle label
+
+The drag handle's `aria-label` defaults to the English "Drag to compare" (a
+German translation ships for multi-language sites). On single-language sites,
+set your own wording via a config option:
+
+```php
+// site/config/config.php
+'sigtrygg-space.kirby-image-compare' => [
+	'label' => 'Bildvergleich verschieben'
+],
+```
 
 ### Custom image markup
 
 The responsive `<picture>` lives in its own snippet. To replace it (different
 widths, formats, a lazy-loading library, …), copy
 `snippets/image-compare-picture.php` to `site/snippets/image-compare-picture.php`
-and adjust it — site snippets override plugin snippets of the same name. The
-same goes for the block markup itself (`snippets/blocks/image-compare.php` →
-`site/snippets/blocks/image-compare.php`).
+and adjust it — site snippets override plugin snippets of the same name. Your
+markup's `picture`/`img` elements are sized by the plugin CSS regardless of
+their classes. The same goes for the block markup itself
+(`snippets/blocks/image-compare.php` → `site/snippets/blocks/image-compare.php`).
 
 ## Development
 

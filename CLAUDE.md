@@ -51,6 +51,27 @@ keep it generic — nothing site-specific may enter this repo.
 
 ## Verified facts
 
+- `page.render:after` is an apply-hook (`$kirby->apply(..., 'html')`,
+  Page.php ~987 in 5.5): the closure receives named args (contentType,
+  data, html, page), its return value replaces the HTML, and it runs
+  BEFORE the page cache stores the result — injected tags are cached.
+- `$plugin->asset('file.css')->url()` returns the hashed media URL
+  (crc32(filename) + '-' + mtime) — the cache-busting canonical form.
+  `mediaUrl() . '/file.css'` (hash-less) resolves only via a route branch
+  marked deprecated in core.
+- In the Panel, a files field inside block content arrives as an array of
+  pickerData objects (uuid, url, image.url/src/srcset, filename, …) — no
+  API call needed for URLs. pickerData contains NO dimensions; read
+  naturalWidth/naturalHeight off the loaded image instead. Top-level `url`
+  and `image.url` are the ORIGINAL file URL (core's image block does the
+  same); `image.srcset` only has tiny list thumbs (38/76w).
+- On single-language installs, frontend `I18n::$locale` is hardcoded 'en'
+  (AppTranslations.php) — plugin translations other than 'en' are
+  unreachable there; the `label` option exists for that case.
+- `Blocks::excerpt()` renders block snippets and strips the markup — any
+  side effects (output, globals) of block snippets fire during excerpt
+  rendering too. Never make block snippets stateful per request.
+
 - `$file->srcset()` accepts an array keyed by descriptor
   (`['480w' => ['width' => 480, 'format' => 'webp', ...]]`) and returns a
   ready srcset string (null when the file has no thumbs).

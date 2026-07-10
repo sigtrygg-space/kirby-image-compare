@@ -1,5 +1,52 @@
 # Changelog
 
+## 0.3.0 — 2026-07-10
+
+Hardening release: all findings from a full code review, verified against the
+Kirby 5.5 core.
+
+**Fixed**
+
+- A plain click on the Panel preview no longer rewrites the start position —
+  only an actual drag (≥ 3px movement, primary button) commits a value; the
+  double-click-to-open gesture and right-clicks leave the content untouched.
+- Frontend assets are now injected into the `<head>` via a `page.render:after`
+  hook — per rendered document instead of per PHP request. Excerpt/JSON
+  renders no longer consume the injection, and cached pages always contain
+  the tags.
+- Asset URLs now use Kirby's hashed plugin-asset URLs
+  (`$plugin->asset()->url()`), so browser caches are busted on every plugin
+  update and the deprecated hash-less media route is no longer relied on.
+- The frontend slider was rewritten on Pointer Events with pointer capture:
+  releasing the mouse outside the window no longer leaves the drag stuck, a
+  second (resting) finger no longer hijacks or aborts the drag, and only the
+  primary button starts one.
+- The Panel drag likewise uses pointer capture and handles `pointercancel` —
+  no more stuck drags or leaked window listeners on touch devices.
+- The Panel preview now reads its image URLs from the block content
+  (pickerData) instead of two API round-trips: previews update immediately
+  when images are swapped in the drawer, and the stage ratio is read from
+  the loaded image itself.
+- The image fields now restrict the picker to images (`query: page.images`);
+  non-image files can no longer be selected and silently rendered as empty
+  layers.
+- `--image-compare-ratio` (and `--image-compare-start`) are set on the
+  `figure` instead of the stage, so the documented CSS override on
+  `.image-compare-stage` actually works.
+- Layer sizing uses low-specificity element selectors as a fallback, so a
+  custom picture snippet without the `.image-compare-pic` class is still
+  sized correctly.
+- New `label` plugin option to set the handle's `aria-label` on
+  single-language sites (where the English translation would otherwise
+  always win).
+
+**Internal**
+
+- Removed dead code paths (unreachable JSON parsing, redundant guards,
+  unused props, `max: 1` next to `multiple: false`), cached the stage rect
+  per drag, and dropped all document/window-level listeners in favor of
+  element-scoped ones.
+
 ## 0.2.0 — 2026-07-10
 
 - **Interactive Panel preview:** the preview now mirrors the frontend

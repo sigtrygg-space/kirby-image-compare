@@ -8,15 +8,15 @@ fields:
       en: Before image
       de: Bild vorher
     type: files
+    query: page.images
     multiple: false
-    max: 1
   image_after:
     label:
       en: After image
       de: Bild nachher
     type: files
+    query: page.images
     multiple: false
-    max: 1
   caption:
     label:
       en: Caption

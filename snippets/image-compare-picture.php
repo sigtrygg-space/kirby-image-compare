@@ -8,7 +8,7 @@
  * @var string|null $sizes
  */
 
-if (isset($image) === false || $image === null || $image->type() !== 'image') {
+if (isset($image) === false || $image->type() !== 'image') {
 	return;
 }
 
@@ -43,8 +43,10 @@ $alt      = $image->alt()->or($image->caption())->value() ?? '';
 	<?php endif ?>
 	<img
 		src="<?= $fallback->url() ?>"
+		<?php if ($fallback->width() > 0 && $fallback->height() > 0) : ?>
 		width="<?= $fallback->width() ?>"
 		height="<?= $fallback->height() ?>"
+		<?php endif ?>
 		alt="<?= esc($alt) ?>"
 		loading="lazy"
 		decoding="async"

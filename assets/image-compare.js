@@ -5,13 +5,7 @@
 (function () {
 	'use strict';
 
-	// only the currently grabbed slider reacts to move/release; one shared
-	// reference lets the document listeners be registered once for all
-	// instances instead of once per slider
-	var activeUpdate = null;
-	var stages = document.querySelectorAll('[data-image-compare]');
-
-	stages.forEach(function (el) {
+	document.querySelectorAll('[data-image-compare]').forEach(function (el) {
 		var after   = el.querySelector('.image-compare-after');
 		var handle  = el.querySelector('.image-compare-handle');
 		var current = 0.5;
@@ -26,17 +20,40 @@
 			handle.style.left = (pct * 100) + '%';
 		}
 
-		function update(clientX) {
-			var rect = el.getBoundingClientRect();
-			set(Math.max(0, Math.min(1, (clientX - rect.left) / rect.width)));
-		}
-
 		var start = parseInt(el.dataset.start, 10);
 		set((isNaN(start) ? 50 : Math.max(0, Math.min(100, start))) / 100);
 
+		// one captured pointer per stage: capture guarantees a terminal
+		// pointerup/pointercancel even off-window, and the id filter keeps
+		// a second (resting) finger from hijacking or ending the drag
+		var pointerId = null;
+		var rect = null;
+
+		function move(e) {
+			if (e.pointerId === pointerId) {
+				set(Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)));
+			}
+		}
+
+		function release(e) {
+			if (e.pointerId === pointerId) {
+				pointerId = null;
+			}
+		}
+
 		el.addEventListener('dragstart', function (e) { e.preventDefault(); });
-		el.addEventListener('mousedown', function () { activeUpdate = update; });
-		el.addEventListener('touchstart', function (e) { activeUpdate = update; update(e.touches[0].clientX); }, { passive: true });
+		el.addEventListener('pointerdown', function (e) {
+			if (pointerId !== null || e.button !== 0) {
+				return;
+			}
+			pointerId = e.pointerId;
+			rect = el.getBoundingClientRect();
+			el.setPointerCapture(e.pointerId);
+			move(e);
+		});
+		el.addEventListener('pointermove', move);
+		el.addEventListener('pointerup', release);
+		el.addEventListener('pointercancel', release);
 
 		handle.addEventListener('keydown', function (e) {
 			if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
@@ -45,11 +62,4 @@
 			}
 		});
 	});
-
-	if (stages.length) {
-		document.addEventListener('mouseup', function () { activeUpdate = null; });
-		document.addEventListener('touchend', function () { activeUpdate = null; });
-		document.addEventListener('mousemove', function (e) { if (activeUpdate) { e.preventDefault(); activeUpdate(e.clientX); } });
-		document.addEventListener('touchmove', function (e) { if (activeUpdate) { e.preventDefault(); activeUpdate(e.touches[0].clientX); } }, { passive: false });
-	}
 })();
