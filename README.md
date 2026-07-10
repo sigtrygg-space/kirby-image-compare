@@ -3,6 +3,8 @@
 A before/after image comparison block for [Kirby CMS](https://getkirby.com) —
 two images, a draggable divider, done.
 
+![Before/after comparison slider](.github/screenshot.jpg)
+
 - **Zero dependencies, zero config.** ~50 lines of vanilla JS, no slider
   library. The frontend CSS/JS are injected automatically, once per page.
 - **Responsive images** out of the box: WebP + JPEG `<picture>` with `srcset`,
