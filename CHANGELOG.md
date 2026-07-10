@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.1 — 2026-07-10
+
+- The default handle labels are noun phrases now ("Image comparison" /
+  "Bildvergleich" instead of "Drag to compare") — screen readers announce
+  the slider role themselves, so the label should name what is controlled,
+  not the widget. README documents the same guidance for the `label` option.
+
 ## 0.4.0 — 2026-07-10
 
 Closes the first round of backlog issues (#1–#4).

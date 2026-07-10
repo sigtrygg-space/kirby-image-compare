@@ -90,6 +90,10 @@ Configure site-wide in `site/config/config.php` under the
 | `step` | `2` | keyboard step in percent (arrow keys; PageUp/PageDown move 10 %, Home/End jump to the edges) |
 | `label` | `null` | overrides the handle's `aria-label` (useful on single-language sites, where the English translation would otherwise win) |
 
+When setting `label`, use a noun naming what is controlled (e.g.
+`'Bildvergleich'`) — screen readers announce the slider role themselves, so
+don't repeat it in the label ("slider for …" would be read twice).
+
 ## Dynamically inserted blocks
 
 The script initializes every `[data-image-compare]` stage once on page load.

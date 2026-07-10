@@ -30,11 +30,12 @@ Kirby::plugin('sigtrygg-space/kirby-image-compare', [
 		'image-compare.js'  => __DIR__ . '/assets/image-compare.js'
 	],
 	'translations' => [
+		// noun phrases: screen readers announce the slider role themselves
 		'en' => [
-			'image-compare.drag' => 'Drag to compare'
+			'image-compare.drag' => 'Image comparison'
 		],
 		'de' => [
-			'image-compare.drag' => 'Bildvergleich verschieben'
+			'image-compare.drag' => 'Bildvergleich'
 		]
 	],
 	'hooks' => [
