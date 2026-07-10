@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 — 2026-07-10
+
+- New `--image-compare-handle-hover-color` custom property: the grip
+  arrows change color on hover and keyboard focus (`:focus-visible`).
+  Defaults to the OS accent color where the browser supports the
+  `AccentColor` keyword; elsewhere the arrows keep their regular color
+  until the property is set (guarded via `@supports` — the keyword must
+  not sit inside `var()`, or unsupporting browsers would blank the
+  arrows).
+
 ## 0.4.1 — 2026-07-10
 
 - The default handle labels are noun phrases now ("Image comparison" /

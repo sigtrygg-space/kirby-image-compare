@@ -115,7 +115,12 @@ Override these custom properties on `.image-compare` or any ancestor:
 | `--image-compare-handle-size` | `2rem` | diameter of the round grip |
 | `--image-compare-handle-bg` | `#fff` | grip background |
 | `--image-compare-handle-color` | `#555` | grip arrow color |
+| `--image-compare-handle-hover-color` | OS accent color* | arrow color on hover and keyboard focus |
 | `--image-compare-arrow-size` | `75%` | arrow size relative to the grip |
+
+\* where the browser supports the `AccentColor` system color keyword
+(Safari, Firefox); elsewhere the arrows keep their regular color until you
+set the property.
 
 The stage's aspect ratio is derived from the before image automatically (the
 plugin sets `--image-compare-ratio` as an inline style on the `figure`). To
