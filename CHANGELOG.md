@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 — 2026-07-10
+
+- While dragging (pointer or keyboard), only the arrow pointing in the
+  drag direction takes the hover color — the two glyphs share one mask,
+  so a 50/50 gradient colors them independently. Works in the Panel
+  preview too. Internal: the hover color is resolved once into a private
+  custom property, removing the duplicated `@supports` blocks.
+
 ## 0.5.0 — 2026-07-10
 
 - New `--image-compare-handle-hover-color` custom property: the grip

@@ -12,7 +12,7 @@
 		>
 			<div class="image-compare-before k-image-compare-preview-layer" :style="beforeStyle" />
 			<div class="image-compare-after k-image-compare-preview-layer" :style="afterStyle" />
-			<div class="image-compare-handle" />
+			<div class="image-compare-handle" :data-direction="direction" />
 		</div>
 		<p v-if="content.caption" class="k-image-compare-preview-caption">
 			{{ content.caption }}
@@ -34,7 +34,8 @@ export default {
 			ratio: null,
 			pointerId: null,
 			dragged: false,
-			dragPosition: 50
+			dragPosition: 50,
+			direction: null
 		};
 	},
 	computed: {
@@ -101,6 +102,7 @@ export default {
 
 			this.pointerId = event.pointerId;
 			this.dragged = false;
+			this.dragPosition = this.position;
 			this.startX = event.clientX;
 			this.stageRect = this.$refs.stage.getBoundingClientRect();
 			this.$refs.stage.setPointerCapture(event.pointerId);
@@ -116,7 +118,13 @@ export default {
 
 			this.dragged = true;
 			const pct = ((event.clientX - this.stageRect.left) / this.stageRect.width) * 100;
-			this.dragPosition = Math.round(Math.max(0, Math.min(100, pct)));
+			const next = Math.round(Math.max(0, Math.min(100, pct)));
+
+			if (next !== this.dragPosition) {
+				this.direction = next > this.dragPosition ? "right" : "left";
+			}
+
+			this.dragPosition = next;
 		},
 		onPointerUp(event) {
 			if (event.pointerId !== this.pointerId) {
@@ -126,6 +134,7 @@ export default {
 			const dragged = this.dragged;
 			this.pointerId = null;
 			this.dragged = false;
+			this.direction = null;
 
 			if (dragged) {
 				this.$emit("update", { ...this.content, start: this.dragPosition });
@@ -137,6 +146,7 @@ export default {
 			if (event.pointerId === this.pointerId) {
 				this.pointerId = null;
 				this.dragged = false;
+				this.direction = null;
 			}
 		}
 	}

@@ -36,15 +36,24 @@
 		var pointerId = null;
 		var rect = null;
 
+		// only the arrow pointing in the current direction lights up (CSS)
+		function setWithDirection(pct) {
+			if (pct !== current) {
+				handle.dataset.direction = pct > current ? 'right' : 'left';
+			}
+			set(pct);
+		}
+
 		function move(e) {
 			if (e.pointerId === pointerId) {
-				set(Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)));
+				setWithDirection(Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)));
 			}
 		}
 
 		function release(e) {
 			if (e.pointerId === pointerId) {
 				pointerId = null;
+				delete handle.dataset.direction;
 			}
 		}
 
@@ -74,9 +83,11 @@
 
 			if (pct !== undefined) {
 				e.preventDefault();
-				set(Math.max(0, Math.min(1, pct)));
+				setWithDirection(Math.max(0, Math.min(1, pct)));
 			}
 		});
+		handle.addEventListener('keyup', function () { delete handle.dataset.direction; });
+		handle.addEventListener('blur', function () { delete handle.dataset.direction; });
 	}
 
 	function init(root) {
