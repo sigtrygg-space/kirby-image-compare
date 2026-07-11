@@ -130,7 +130,7 @@ export default {
 			if (next !== this.dragPosition) {
 				this.direction = next > this.dragPosition ? "right" : "left";
 				clearTimeout(this.idleTimer);
-				this.idleTimer = setTimeout(() => (this.direction = null), 200);
+				this.idleTimer = setTimeout(() => (this.direction = null), 400);
 			}
 
 			this.dragPosition = next;

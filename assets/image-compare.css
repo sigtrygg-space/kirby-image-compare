@@ -78,7 +78,23 @@
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* the double arrow — masked, so its color stays themeable */
+/* the two glyphs sit symmetric around the center of one mask, so a 50/50
+   gradient colors them independently; each side is a typed (registered)
+   custom property, which makes every state change a smooth color fade —
+   browsers without @property fall back to instant switches */
+@property --_arrow-left {
+	syntax: "<color>";
+	inherits: false;
+	initial-value: transparent;
+}
+
+@property --_arrow-right {
+	syntax: "<color>";
+	inherits: false;
+	initial-value: transparent;
+}
+
+/* the double arrow — masked, so its colors stay themeable */
 .image-compare-handle::after {
 	content: "";
 	position: absolute;
@@ -87,9 +103,11 @@
 	transform: translate(-50%, -50%);
 	width: var(--image-compare-handle-size, 2rem);
 	height: var(--image-compare-handle-size, 2rem);
-	background: var(--image-compare-handle-color, #555);
+	--_arrow-left: var(--image-compare-handle-color, #555);
+	--_arrow-right: var(--image-compare-handle-color, #555);
+	background-image: linear-gradient(to right, var(--_arrow-left) 50%, var(--_arrow-right) 50%);
 	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 7l-5 5 5 5V7zm8 0v10l5-5-5-5z'/%3E%3C/svg%3E") center / var(--image-compare-arrow-size, 75%) no-repeat;
-	transition: background-color 150ms ease;
+	transition: --_arrow-left 250ms ease, --_arrow-right 250ms ease;
 }
 
 /* resolve the hover color once into an internal property — the AccentColor
@@ -108,7 +126,8 @@
 
 @media (hover: hover) {
 	.image-compare-handle:hover::after {
-		background-color: var(--_hover-color);
+		--_arrow-left: var(--_hover-color);
+		--_arrow-right: var(--_hover-color);
 	}
 }
 
@@ -116,16 +135,16 @@
 /* while a pointer holds the slider (touch has no :hover) both arrows
    signal "engaged"; actual movement then narrows it to one direction */
 .image-compare-handle[data-active]::after {
-	background-color: var(--_hover-color);
+	--_arrow-left: var(--_hover-color);
+	--_arrow-right: var(--_hover-color);
 }
 
-/* while dragging, only the arrow pointing in the drag direction lights up:
-   the two glyphs sit symmetric around the center of the mask, so a 50/50
-   gradient colors them independently */
+/* while actively dragging, only the direction arrow stays lit
+   (these rules come last so they win over the engaged state above) */
 .image-compare-handle[data-direction="left"]::after {
-	background-image: linear-gradient(to right, var(--_hover-color) 50%, var(--image-compare-handle-color, #555) 50%);
+	--_arrow-right: var(--image-compare-handle-color, #555);
 }
 
 .image-compare-handle[data-direction="right"]::after {
-	background-image: linear-gradient(to right, var(--image-compare-handle-color, #555) 50%, var(--_hover-color) 50%);
+	--_arrow-left: var(--image-compare-handle-color, #555);
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.1 — 2026-07-11
+
+- The arrow highlight fades instead of snapping: both arrow colors are
+  typed (registered) custom properties now, so every state change —
+  engage, direction switch, idle re-engage, release — is a smooth 250 ms
+  color transition. Browsers without `@property` keep the previous
+  instant switches. The mid-drag idle timeout was raised to 400 ms.
+
 ## 0.7.0 — 2026-07-11
 
 - Cleaner drag-state model (refines v0.6.0, closes #5): while a pointer
