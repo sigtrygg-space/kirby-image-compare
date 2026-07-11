@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.0 — 2026-07-11
+
+First stable release — no functional changes over 0.7.1. From here on,
+semantic versioning guards this public surface:
+
+- the `image-compare` block type and its blueprint fields
+  (`image_before`, `image_after`, `caption`, `start`)
+- the plugin options (`label`, `step`, `widths`, `formats`, `quality`,
+  `sizes`, `fallback`)
+- the documented CSS custom properties (`--image-compare-*`)
+- the snippet override points (`blocks/image-compare`,
+  `image-compare-picture`)
+- the frontend API `window.kirbyImageCompare.init(root)`
+- the translation key `image-compare.drag`
+
 ## 0.7.1 — 2026-07-11
 
 - The arrow highlight fades instead of snapping: both arrow colors are
