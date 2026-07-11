@@ -2,7 +2,7 @@
     "name": "sigtrygg-space/kirby-image-compare",
     "description": "Before/after image comparison block for Kirby CMS: responsive images, draggable divider, zero dependencies.",
     "type": "kirby-plugin",
-    "version": "0.7.1",
+    "version": "1.0.0",
     "license": "MIT",
     "keywords": [
         "kirby",
