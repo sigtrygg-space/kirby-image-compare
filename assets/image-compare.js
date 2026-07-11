@@ -35,25 +35,47 @@
 		// a second (resting) finger from hijacking or ending the drag
 		var pointerId = null;
 		var rect = null;
+		var downX = 0;
+		var moved = false;
+		var idleTimer = null;
 
-		// only the arrow pointing in the current direction lights up (CSS)
+		// only the arrow pointing in the current direction lights up (CSS);
+		// during a pointer drag a short standstill re-engages both arrows —
+		// keyboard keeps its direction until keyup/blur (the OS key-repeat
+		// delay would otherwise blank it for a moment)
 		function setWithDirection(pct) {
 			if (pct !== current) {
 				handle.dataset.direction = pct > current ? 'right' : 'left';
+				clearTimeout(idleTimer);
+				if (pointerId !== null) {
+					idleTimer = setTimeout(function () { delete handle.dataset.direction; }, 200);
+				}
 			}
 			set(pct);
 		}
 
 		function move(e) {
-			if (e.pointerId === pointerId) {
-				setWithDirection(Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)));
+			if (e.pointerId !== pointerId) {
+				return;
+			}
+			var pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+			// the initial jump-to-tap and micro-jitter carry no direction —
+			// a plain tap must not light a single arrow
+			moved = moved || Math.abs(e.clientX - downX) >= 3;
+
+			if (moved) {
+				setWithDirection(pct);
+			} else {
+				set(pct);
 			}
 		}
 
 		function release(e) {
 			if (e.pointerId === pointerId) {
 				pointerId = null;
+				clearTimeout(idleTimer);
 				delete handle.dataset.direction;
+				delete handle.dataset.active;
 			}
 		}
 
@@ -63,8 +85,11 @@
 				return;
 			}
 			pointerId = e.pointerId;
+			downX = e.clientX;
+			moved = false;
 			rect = el.getBoundingClientRect();
 			el.setPointerCapture(e.pointerId);
+			handle.dataset.active = 'true';
 			move(e);
 		});
 		el.addEventListener('pointermove', move);

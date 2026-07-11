@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0 — 2026-07-11
+
+- Cleaner drag-state model (refines v0.6.0, closes #5): while a pointer
+  holds the slider, both arrows take the engaged (hover) color — a plain
+  tap on mobile no longer lights a single arrow. Actual movement (≥ 3px)
+  narrows the highlight to the direction arrow; after 200 ms of
+  standstill both arrows re-engage; release returns to neutral. Panel
+  preview behaves identically.
+
 ## 0.6.0 — 2026-07-10
 
 - While dragging (pointer or keyboard), only the arrow pointing in the
