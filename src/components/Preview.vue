@@ -12,7 +12,11 @@
 		>
 			<div class="image-compare-before k-image-compare-preview-layer" :style="beforeStyle" />
 			<div class="image-compare-after k-image-compare-preview-layer" :style="afterStyle" />
-			<div class="image-compare-handle" :data-direction="direction" />
+			<div
+				class="image-compare-handle"
+				:data-active="pointerId !== null || null"
+				:data-direction="direction"
+			/>
 		</div>
 		<p v-if="content.caption" class="k-image-compare-preview-caption">
 			{{ content.caption }}
@@ -122,6 +126,8 @@ export default {
 
 			if (next !== this.dragPosition) {
 				this.direction = next > this.dragPosition ? "right" : "left";
+				clearTimeout(this.idleTimer);
+				this.idleTimer = setTimeout(() => (this.direction = null), 200);
 			}
 
 			this.dragPosition = next;
@@ -135,6 +141,7 @@ export default {
 			this.pointerId = null;
 			this.dragged = false;
 			this.direction = null;
+			clearTimeout(this.idleTimer);
 
 			if (dragged) {
 				this.$emit("update", { ...this.content, start: this.dragPosition });
@@ -147,6 +154,7 @@ export default {
 				this.pointerId = null;
 				this.dragged = false;
 				this.direction = null;
+				clearTimeout(this.idleTimer);
 			}
 		}
 	}

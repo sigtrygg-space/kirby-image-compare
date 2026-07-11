@@ -112,7 +112,10 @@
 	}
 }
 
-.image-compare-handle:focus-visible::after {
+.image-compare-handle:focus-visible::after,
+/* while a pointer holds the slider (touch has no :hover) both arrows
+   signal "engaged"; actual movement then narrows it to one direction */
+.image-compare-handle[data-active]::after {
 	background-color: var(--_hover-color);
 }
 
