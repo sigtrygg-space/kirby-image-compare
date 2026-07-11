@@ -69,6 +69,9 @@ export default {
 			return this.afterUrl ? { backgroundImage: `url(${this.afterUrl})` } : {};
 		}
 	},
+	destroyed() {
+		clearTimeout(this.idleTimer);
+	},
 	watch: {
 		beforeUrl: {
 			immediate: true,

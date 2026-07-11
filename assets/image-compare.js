@@ -40,12 +40,16 @@
 		var idleTimer = null;
 
 		// only the arrow pointing in the current direction lights up (CSS);
-		// after a short standstill both arrows return to the engaged color
+		// during a pointer drag a short standstill re-engages both arrows —
+		// keyboard keeps its direction until keyup/blur (the OS key-repeat
+		// delay would otherwise blank it for a moment)
 		function setWithDirection(pct) {
 			if (pct !== current) {
 				handle.dataset.direction = pct > current ? 'right' : 'left';
 				clearTimeout(idleTimer);
-				idleTimer = setTimeout(function () { delete handle.dataset.direction; }, 200);
+				if (pointerId !== null) {
+					idleTimer = setTimeout(function () { delete handle.dataset.direction; }, 200);
+				}
 			}
 			set(pct);
 		}
