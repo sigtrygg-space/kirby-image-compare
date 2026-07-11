@@ -48,7 +48,7 @@
 				handle.dataset.direction = pct > current ? 'right' : 'left';
 				clearTimeout(idleTimer);
 				if (pointerId !== null) {
-					idleTimer = setTimeout(function () { delete handle.dataset.direction; }, 200);
+					idleTimer = setTimeout(function () { delete handle.dataset.direction; }, 400);
 				}
 			}
 			set(pct);
