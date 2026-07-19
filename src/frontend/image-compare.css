@@ -1,0 +1,155 @@
+/*!
+ * image-compare — dependency-free before/after slider
+ * https://github.com/sigtrygg-space/kirby-image-compare | MIT
+ */
+
+/*
+ * Frontend styles for the image comparison block.
+ *
+ * Themeable via custom properties (set them on .image-compare or any ancestor):
+ *   --image-compare-ratio         aspect ratio of the stage (set inline from the before image)
+ *   --image-compare-start         initial divider position (set inline from the block)
+ *   --image-compare-line-width    divider line width          (default: 2px)
+ *   --image-compare-line-color    divider line color          (default: #fff)
+ *   --image-compare-handle-size   diameter of the round grip  (default: 2rem)
+ *   --image-compare-handle-bg     grip background             (default: #fff)
+ *   --image-compare-handle-color  grip arrow color            (default: #555)
+ *   --image-compare-handle-hover-color  arrow color on hover/focus
+ *                                 (default: the OS accent color where the
+ *                                 browser supports the AccentColor keyword,
+ *                                 otherwise the regular arrow color)
+ *   --image-compare-arrow-size    arrow size relative to the grip (default: 75%)
+ */
+
+.image-compare-stage {
+	position: relative;
+	overflow: hidden;
+	aspect-ratio: var(--image-compare-ratio, 3 / 2);
+	cursor: ew-resize;
+	user-select: none;
+	touch-action: none;
+}
+
+.image-compare-before,
+.image-compare-after {
+	position: absolute;
+	inset: 0;
+}
+
+.image-compare-after {
+	clip-path: inset(0 calc(100% - var(--image-compare-start, 50%)) 0 0);
+}
+
+/* element-level (low-specificity) selectors, so custom markup from an
+   overridden picture snippet is sized correctly even without the
+   .image-compare-pic class */
+.image-compare-before :where(picture),
+.image-compare-after :where(picture),
+.image-compare-pic {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.image-compare-before :where(img),
+.image-compare-after :where(img) {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.image-compare-handle {
+	position: absolute;
+	inset: 0 auto 0 var(--image-compare-start, 50%);
+	transform: translateX(-50%);
+	width: var(--image-compare-line-width, 2px);
+	border: none;
+	padding: 0;
+	background: var(--image-compare-line-color, #fff);
+	cursor: ew-resize;
+}
+
+/* the round grip */
+.image-compare-handle::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: var(--image-compare-handle-size, 2rem);
+	height: var(--image-compare-handle-size, 2rem);
+	border-radius: 50%;
+	background: var(--image-compare-handle-bg, #fff);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* the two glyphs sit symmetric around the center of one mask, so a 50/50
+   gradient colors them independently; each side is a typed (registered)
+   custom property, which makes every state change a smooth color fade —
+   browsers without @property fall back to instant switches */
+@property --_arrow-left {
+	syntax: "<color>";
+	inherits: false;
+	initial-value: transparent;
+}
+
+@property --_arrow-right {
+	syntax: "<color>";
+	inherits: false;
+	initial-value: transparent;
+}
+
+/* the double arrow — masked, so its colors stay themeable */
+.image-compare-handle::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: var(--image-compare-handle-size, 2rem);
+	height: var(--image-compare-handle-size, 2rem);
+	--_arrow-left: var(--image-compare-handle-color, #555);
+	--_arrow-right: var(--image-compare-handle-color, #555);
+	background-image: linear-gradient(to right, var(--_arrow-left) 50%, var(--_arrow-right) 50%);
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 7l-5 5 5 5V7zm8 0v10l5-5-5-5z'/%3E%3C/svg%3E") center / var(--image-compare-arrow-size, 75%) no-repeat;
+	transition: --_arrow-left 250ms ease, --_arrow-right 250ms ease;
+}
+
+/* resolve the hover color once into an internal property — the AccentColor
+   keyword must not end up inside var() on browsers without support (it
+   would compute the background to its initial value and hide the arrows),
+   so the accent default only applies inside the @supports guard */
+.image-compare-handle {
+	--_hover-color: var(--image-compare-handle-hover-color, var(--image-compare-handle-color, #555));
+}
+
+@supports (color: AccentColor) {
+	.image-compare-handle {
+		--_hover-color: var(--image-compare-handle-hover-color, AccentColor);
+	}
+}
+
+@media (hover: hover) {
+	.image-compare-handle:hover::after {
+		--_arrow-left: var(--_hover-color);
+		--_arrow-right: var(--_hover-color);
+	}
+}
+
+.image-compare-handle:focus-visible::after,
+/* while a pointer holds the slider (touch has no :hover) both arrows
+   signal "engaged"; actual movement then narrows it to one direction */
+.image-compare-handle[data-active]::after {
+	--_arrow-left: var(--_hover-color);
+	--_arrow-right: var(--_hover-color);
+}
+
+/* while actively dragging, only the direction arrow stays lit
+   (these rules come last so they win over the engaged state above) */
+.image-compare-handle[data-direction="left"]::after {
+	--_arrow-right: var(--image-compare-handle-color, #555);
+}
+
+.image-compare-handle[data-direction="right"]::after {
+	--_arrow-left: var(--image-compare-handle-color, #555);
+}

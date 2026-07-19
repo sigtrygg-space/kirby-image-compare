@@ -22,10 +22,12 @@ jobs:
       - name: Lint all PHP files
         run: find . -name '*.php' -not -path './node_modules/*' -print0 | xargs -0 -n1 php -l
 
-  # the committed index.js/index.css must always match a fresh build
-  # of the panel sources — a stale build must never reach main or a
-  # release, since installs use the committed files as-is
-  panel-build:
+  # the committed build outputs must always match a fresh build of the
+  # sources — the panel bundle (index.js/index.css) and the minified
+  # frontend assets (assets/image-compare.{js,css}) alike. A stale build
+  # must never reach main or a release, since installs use the committed
+  # files as-is
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +43,7 @@ jobs:
 
       - name: Fail if the committed build is stale
         run: |
-          if ! git diff --exit-code -- index.js index.css; then
-            echo "::error::index.js/index.css are stale — run 'npm run build' and commit the result"
+          if ! git diff --exit-code -- index.js index.css assets/image-compare.js assets/image-compare.css; then
+            echo "::error::committed build is stale — run 'npm run build' and commit the result"
             exit 1
           fi
