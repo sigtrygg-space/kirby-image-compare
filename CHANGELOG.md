@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1 — 2026-07-19
+
+### Changed
+- Frontend assets (`assets/image-compare.{js,css}`) are now minified at
+  build time; source moved to `src/frontend/`. Shipped paths and runtime
+  behavior are unchanged, license banner preserved.
+
 ## 1.0.0 — 2026-07-11
 
 First stable release — no functional changes over 0.7.1. From here on,
