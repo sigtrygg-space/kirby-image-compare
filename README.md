@@ -26,17 +26,20 @@ two images, a draggable divider, done.
 ### Composer
 
 ```bash
-composer require sigtrygg-space/kirby-image-compare
+composer require sigtrygg-space/kirby-image-compare:^1.0
 ```
+
+(The constraint matters: an unpinned require resolves to the 2.x line,
+whose Panel bundle needs Kirby 6.)
 
 ### Download
 
-Download the latest release and copy the folder to `site/plugins/image-compare`.
+Download a **1.x release** and copy the folder to `site/plugins/image-compare`.
 
 ### Git submodule
 
 ```bash
-git submodule add https://github.com/sigtrygg-space/kirby-image-compare.git site/plugins/image-compare
+git submodule add -b v1 https://github.com/sigtrygg-space/kirby-image-compare.git site/plugins/image-compare
 ```
 
 ## Usage
