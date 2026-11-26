@@ -118,15 +118,20 @@ export default {
 				return;
 			}
 
+			// ignore responses (and errors) when the field changed meanwhile
+			const isCurrent = () =>
+				this.fileId(target === "beforeUrl" ? this.content?.image_before : this.content?.image_after) === id;
+
 			try {
 				const file = await this.$panel.api.files.get(null, id, { select: "panelImage" });
 
-				// ignore the response when the field changed meanwhile
-				if (this.fileId(target === "beforeUrl" ? this.content?.image_before : this.content?.image_after) === id) {
+				if (isCurrent()) {
 					this[target] = file?.panelImage?.url ?? null;
 				}
 			} catch {
-				this[target] = null;
+				if (isCurrent()) {
+					this[target] = null;
+				}
 			}
 		},
 		// dragging the divider writes the released position back into the
