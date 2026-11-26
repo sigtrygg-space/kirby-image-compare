@@ -39,7 +39,7 @@ Download a **1.x release** and copy the folder to `site/plugins/image-compare`.
 ### Git submodule
 
 ```bash
-git submodule add -b v1 https://github.com/sigtrygg-space/kirby-image-compare.git site/plugins/image-compare
+git submodule add -b kirby-5 https://github.com/sigtrygg-space/kirby-image-compare.git site/plugins/image-compare
 ```
 
 ## Usage
