@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.2 — 2026-11-26
+
+Maintenance-branch bootstrap: the 1.x line (Kirby 5) now lives on the
+`v1` branch; `main` carries 2.x for Kirby 6. No functional changes.
+
+- composer.json declares `extra.kirby.compatible: "^5.0"` (read by the
+  plugin directory).
+- The release workflow on this branch tags releases from pushes to `v1`.
+- README points Kirby 6 users to the 2.x line.
+
 ## 1.0.1 — 2026-07-19
 
 ### Changed
