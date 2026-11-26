@@ -3,7 +3,7 @@
 ## 2.0.0 — 2026-11-26
 
 Kirby 6 support. The 2.x line requires Kirby 6 and PHP 8.3+; Kirby 5
-stays supported on the 1.x line (`v1` branch).
+stays supported on the 1.x line (`kirby-5` branch).
 
 ### Changed (breaking)
 - The Panel preview is built for Vue 3.5 (kirbyup 4) — Kirby 6's Panel

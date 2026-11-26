@@ -1,7 +1,7 @@
 # kirby-image-compare — Project Context
 
 Before/after image comparison block plugin. 2.x (main) targets Kirby 6;
-1.x (`v1` branch) targets Kirby 5. Public repo:
+1.x (`kirby-5` branch) targets Kirby 5. Public repo:
 `sigtrygg-space/kirby-image-compare`. Extracted from a private site project;
 keep it generic — nothing site-specific may enter this repo.
 
