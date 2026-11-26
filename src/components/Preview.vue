@@ -31,8 +31,13 @@ export default {
 		content: Object,
 		disabled: Boolean
 	},
+	emits: ["update", "open"],
 	data() {
 		return {
+			// Kirby 6 delivers picker values as UUID strings, so the URLs
+			// are resolved through the Panel API (see the content watchers)
+			beforeUrl: null,
+			afterUrl: null,
 			// mirrors the frontend: the stage ratio follows the before
 			// image; null falls back to the stylesheet's 3 / 2
 			ratio: null,
@@ -43,15 +48,6 @@ export default {
 		};
 	},
 	computed: {
-		// the files field delivers its value as pickerData objects inside
-		// the reactive content prop — no API round-trip needed, and image
-		// swaps in the drawer update the preview automatically
-		beforeUrl() {
-			return this.fileUrl(this.content?.image_before);
-		},
-		afterUrl() {
-			return this.fileUrl(this.content?.image_after);
-		},
 		// while dragging the local position wins; otherwise mirror the
 		// stored start value (which the range field in the drawer edits)
 		position() {
@@ -69,35 +65,69 @@ export default {
 			return this.afterUrl ? { backgroundImage: `url(${this.afterUrl})` } : {};
 		}
 	},
-	destroyed() {
+	unmounted() {
 		clearTimeout(this.idleTimer);
 	},
 	watch: {
-		beforeUrl: {
+		"content.image_before": {
 			immediate: true,
-			// pickerData carries no dimensions, so read them off the loaded
-			// image itself (same URL as the layer — the browser fetches once)
-			handler(url) {
-				this.ratio = null;
-
-				if (!url) {
-					return;
-				}
-
-				const probe = new Image();
-				probe.onload = () => {
-					if (this.beforeUrl === url && probe.naturalWidth > 0 && probe.naturalHeight > 0) {
-						this.ratio = `${probe.naturalWidth} / ${probe.naturalHeight}`;
-					}
-				};
-				probe.src = url;
+			handler(value) {
+				this.resolveUrl(value, "beforeUrl");
 			}
+		},
+		"content.image_after": {
+			immediate: true,
+			handler(value) {
+				this.resolveUrl(value, "afterUrl");
+			}
+		},
+		beforeUrl(url) {
+			// the API response carries no dimensions, so read them off the
+			// loaded image itself (same URL as the layer — fetched once)
+			this.ratio = null;
+
+			if (!url) {
+				return;
+			}
+
+			const probe = new Image();
+			probe.onload = () => {
+				if (this.beforeUrl === url && probe.naturalWidth > 0 && probe.naturalHeight > 0) {
+					this.ratio = `${probe.naturalWidth} / ${probe.naturalHeight}`;
+				}
+			};
+			probe.src = url;
 		}
 	},
 	methods: {
-		fileUrl(fieldValue) {
+		fileId(fieldValue) {
 			const first = Array.isArray(fieldValue) ? fieldValue[0] : null;
-			return first?.image?.url ?? first?.url ?? null;
+
+			// Kirby 6 stores UUID/ID strings in the form value
+			if (typeof first === "string") {
+				return first;
+			}
+
+			return first?.uuid ?? first?.id ?? null;
+		},
+		async resolveUrl(fieldValue, target) {
+			const id = this.fileId(fieldValue);
+
+			if (!id) {
+				this[target] = null;
+				return;
+			}
+
+			try {
+				const file = await this.$panel.api.files.get(null, id, { select: "panelImage" });
+
+				// ignore the response when the field changed meanwhile
+				if (this.fileId(target === "beforeUrl" ? this.content?.image_before : this.content?.image_after) === id) {
+					this[target] = file?.panelImage?.url ?? null;
+				}
+			} catch {
+				this[target] = null;
+			}
 		},
 		// dragging the divider writes the released position back into the
 		// block's `start` field — same field the range input edits; a plain

@@ -1,6 +1,7 @@
 # kirby-image-compare — Project Context
 
-Before/after image comparison block plugin for Kirby 5. Public repo:
+Before/after image comparison block plugin. 2.x (main) targets Kirby 6;
+1.x (`v1` branch) targets Kirby 5. Public repo:
 `sigtrygg-space/kirby-image-compare`. Extracted from a private site project;
 keep it generic — nothing site-specific may enter this repo.
 
@@ -49,7 +50,26 @@ keep it generic — nothing site-specific may enter this repo.
   (setUp must conditionally `require` index.php again); `$kirby->clone()`
   drops impersonation.
 
-## Verified facts
+## Verified facts (Kirby 6, checked against 6.0.0 source + live tests)
+
+- Kirby 6 Panel = Vue 3.5; bundles need kirbyup 4 (Node 24+); `kirbyup dev`
+  replaces `kirbyup serve`. Vue 2 bundles do not load (and vice versa on
+  Kirby 5), hence the split major versions.
+- Picker fields (K6 `filepicker`; the legacy `files` type is auto-mapped by
+  the blueprint Normalizer) store their form value as a list of UUID/ID
+  STRINGS (`ModelPickerField::toFormValue()`) — no pickerData objects
+  anymore. `this.$panel.api.files.get(null, uuid, {select: "panelImage"})`
+  still resolves them (verified live on 6.0.0).
+- Unchanged in Kirby 6 (source-diffed 5.6.4 vs 6.0.0 + live-tested):
+  `page.render:after` apply-hook incl. before-cache ordering, hashed plugin
+  asset URLs (the hash-less route even still exists), `$file->srcset()`
+  array config, plugin extension arrays (blueprints/snippets/assets/
+  translations/options/hooks).
+- Vue 3 component changes applied: `destroyed` → `unmounted`, explicit
+  `emits` declaration (undeclared events would otherwise become native DOM
+  listeners on the root element).
+
+## Verified facts (Kirby 5)
 
 - kirbyup bundles CSS imported in `src/index.js` (e.g.
   `import "../assets/image-compare.css"`) into the built `index.css` —

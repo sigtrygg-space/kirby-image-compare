@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.0.0 — 2026-11-26
+
+Kirby 6 support. The 2.x line requires Kirby 6 and PHP 8.3+; Kirby 5
+stays supported on the 1.x line (`v1` branch).
+
+### Changed (breaking)
+- The Panel preview is built for Vue 3.5 (kirbyup 4) — Kirby 6's Panel
+  cannot load Vue 2 bundles, and this bundle will not load in Kirby 5.
+- Image URLs in the preview are resolved through the Panel API again:
+  Kirby 6 delivers picker values as UUID strings instead of picker data
+  objects. Swapping images in the drawer still updates the preview
+  reactively (content watchers).
+- The blueprint uses the Kirby 6 field name `filepicker` (the legacy
+  `files` type is deprecated in Kirby 6).
+- composer.json declares `extra.kirby.compatible: "^6.0"` and requires
+  PHP >= 8.3.
+
+### Unchanged
+- The whole PHP/frontend surface: block type and fields, snippets and
+  their override points, plugin options, CSS custom properties,
+  `window.kirbyImageCompare.init()`, asset injection via
+  `page.render:after`, hashed plugin-asset URLs, and the `srcset()`
+  based picture output all work identically on Kirby 6.
+
 ## 1.0.1 — 2026-07-19
 
 ### Changed
