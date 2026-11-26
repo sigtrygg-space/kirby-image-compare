@@ -7,14 +7,14 @@ fields:
     label:
       en: Before image
       de: Bild vorher
-    type: files
+    type: filepicker
     query: page.images
     multiple: false
   image_after:
     label:
       en: After image
       de: Bild nachher
-    type: files
+    type: filepicker
     query: page.images
     multiple: false
   caption:

@@ -18,8 +18,8 @@ two images, a draggable divider, done.
 
 ## Requirements
 
-- Kirby 5
-- PHP 8.2+
+- Kirby 6, PHP 8.3+ (this branch, plugin 2.x)
+- Kirby 5, PHP 8.2+: use the 1.x line — `composer require sigtrygg-space/kirby-image-compare:^1.0` (maintained on the [`v1` branch](https://github.com/sigtrygg-space/kirby-image-compare/tree/v1))
 
 ## Installation
 
